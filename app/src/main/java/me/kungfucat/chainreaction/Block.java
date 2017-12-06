@@ -13,6 +13,7 @@ import pl.droidsonroids.gif.GifImageView;
  * Created by harsh on 12/6/17.
  */
 
+//for one single box
 public class Block {
 
     Context context;
@@ -29,6 +30,7 @@ public class Block {
     }
 
     public boolean isExplodable(int i, int j) {
+        //for corner blocks
         if ((i == 0 && j == 0) ||
                 (i == MainActivity.ROW_COUNT - 1 && j == 0) ||
                 (i == 0 && j == MainActivity.COLUMN_COUNT - 1) ||
@@ -39,6 +41,7 @@ public class Block {
             return false;
         }
 
+        //for blocks on the sides
         if (i == 0 || j == 0 || i == MainActivity.ROW_COUNT - 1 || j == MainActivity.COLUMN_COUNT - 1) {
             if (count == 3) {
                 return true;
@@ -46,6 +49,7 @@ public class Block {
             return false;
         }
 
+        //for the remaining blocks
         if (count == 4) {
             return true;
         }
@@ -53,6 +57,7 @@ public class Block {
     }
 
     public void display() {
+        //connect corresponding gifs to the gifImageViews'
         if (playerColour.equals("none")) {
             gifImageView.setImageDrawable(Helper.empty);
         } else if (playerColour.equals("red")) {

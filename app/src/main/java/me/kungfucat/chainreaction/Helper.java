@@ -10,6 +10,7 @@ import pl.droidsonroids.gif.GifDrawable;
  * Created by harsh on 12/6/17.
  */
 
+//for loading the gifs from the raw folder, thus needs only one static method
 public class Helper {
 
     public static GifDrawable red1, red2, red3, red4,

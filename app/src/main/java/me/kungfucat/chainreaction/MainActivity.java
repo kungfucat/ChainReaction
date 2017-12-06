@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         linearLayout = findViewById(R.id.linearLayout);
         arrayList = new ArrayList<>();
         context = this;
+        //Helper class needed the context to access resources, and hence get the gifs
         Helper.initialise(context);
         currentPlayer = "red";
         currentColor = Color.RED;
@@ -40,8 +41,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void fillTheLayout() {
+        //tried grid layout, didn't work properly, and the imageViews went off screen
         for (int i = 0; i < ROW_COUNT; i++) {
-
+            //these are horizontal linear layouts that will be part of the vertical linear layout, shown in XML
             LinearLayout sublinearLayout = new LinearLayout(this);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -49,11 +51,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             layoutParams.weight = 1;
 
             sublinearLayout.setLayoutParams(layoutParams);
+            //center align the contents
             sublinearLayout.setGravity(Gravity.CENTER);
             sublinearLayout.setPadding(2 * PADDING, 2 * PADDING, 2 * PADDING, 2 * PADDING);
 
             for (int j = 0; j < COLUMN_COUNT; j++) {
 
+                //Add the gifImageViews to the linear layout created above
                 GifImageView gifImageView = new GifImageView(this);
                 LinearLayout.LayoutParams imageViewlayoutParam = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -61,11 +65,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 imageViewlayoutParam.weight = 1;
 
                 gifImageView.setLayoutParams(imageViewlayoutParam);
+                //this padding helps in showing the white boundaries
                 gifImageView.setPadding(PADDING, PADDING, PADDING, PADDING);
+                //Similar to storing in row-major form, used that logic to set id's
                 gifImageView.setId(i * COLUMN_COUNT + j);
+                //main activity implements the onClick
                 gifImageView.setOnClickListener(this);
                 Block block = new Block(gifImageView, context);
-//                block.display();
                 arrayList.add(block);
                 sublinearLayout.addView(gifImageView);
 
@@ -106,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //toggle between the players
     public void toggle() {
         if (currentPlayer.equals("red")) {
             currentColor = Color.BLUE;
@@ -114,9 +121,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             currentPlayer = "red";
             currentColor = Color.RED;
         }
+        //change color of grid
         changeColor();
     }
 
+    //change color depending on the basis of the color of the current player
     public void changeColor() {
         linearLayout.setBackgroundColor(currentColor);
         for (int i = 0; i < arrayList.size(); i++) {
@@ -124,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //TODO : implement a bfs on the 2d grid, with time gaps between each expansion
     public void explode(int x, int y) {
         if (x < 0 || y < 0 || x > MainActivity.ROW_COUNT - 1 || y > MainActivity.COLUMN_COUNT - 1) {
             return;
