@@ -1,6 +1,7 @@
 package me.kungfucat.chainreaction;
 
 import android.content.Context;
+import android.graphics.drawable.ScaleDrawable;
 
 import java.io.IOException;
 

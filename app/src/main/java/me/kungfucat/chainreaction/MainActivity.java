@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int x = id / COLUMN_COUNT;
         int y = id % COLUMN_COUNT;
 
+
         Block currentBlock = arrayList.get(id);
 
         if (currentBlock.playerColour.equals("none")) {
@@ -208,8 +209,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-    //TODO : implement a bfs on the 2d grid, with time gaps between each expansion
     public void explode(int x, int y) {
         if (x < 0 || y < 0 || x > MainActivity.ROW_COUNT - 1 || y > MainActivity.COLUMN_COUNT - 1) {
             return;
