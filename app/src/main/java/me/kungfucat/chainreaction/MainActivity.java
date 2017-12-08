@@ -8,9 +8,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 gifImageView.setId(i * COLUMN_COUNT + j);
                 //main activity implements the onClick
                 gifImageView.setOnClickListener(this);
+                gifImageView.setImageDrawable(Helper.empty);
                 Block block = new Block(gifImageView, context);
                 arrayList.add(block);
                 sublinearLayout.addView(gifImageView);
@@ -89,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int x = id / COLUMN_COUNT;
         int y = id % COLUMN_COUNT;
 
-        Log.i("TAG", "onLongClick: x = " + x + ", y = " + y);
-
         Block currentBlock = arrayList.get(id);
 
         if (currentBlock.playerColour.equals("none")) {
@@ -103,7 +106,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for (int i = 0; i < arrayList.size(); i++) {
                 arrayList.get(i).gifImageView.setOnClickListener(null);
             }
-            explode(x, y);
+
+            currentBlock.count++;
+            currentBlock.display();
+
+            if (currentBlock.isExplodable(x, y)) {
+                explode1(x, y);
+            }
 //                After explosion, attach on click back
             for (int i = 0; i < arrayList.size(); i++) {
                 arrayList.get(i).gifImageView.setOnClickListener(this);
@@ -132,6 +141,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             arrayList.get(i).gifImageView.setBackgroundColor(currentColor);
         }
     }
+
+    public void explode1(int x, int y) {
+        int id = x * COLUMN_COUNT + y;
+
+        Queue<Block> queue = new LinkedList<>();
+        ArrayList<Block> temp = new ArrayList<>();
+
+        queue.add(arrayList.get(id));
+        queue.add(null);
+
+        temp.add(arrayList.get(id));
+        temp.add(null);
+
+        final int c[] = {0, 0, 1, -1};
+        final int r[] = {1, -1, 0, 0};
+
+        while (!queue.isEmpty()) {
+            Block current = queue.peek();
+            queue.remove();
+            if (current == null) {
+//                updateUI(temp);
+                temp.clear();
+
+//                Log.i("TAG", " :  x = " + x1 + ", y = " + y);
+
+                if (!queue.isEmpty()) {
+                    queue.add(null);
+                }
+                continue;
+            }
+
+            current.count = 0;
+            current.playerColour = "none";
+            current.display();
+
+            for (int i = 0; i < 4; i++) {
+                int x1 = current.id / COLUMN_COUNT, y1 = current.id % COLUMN_COUNT;
+
+                int X = x1 + r[i], Y = y1 + c[i];
+                if (X >= 0 && X < ROW_COUNT && Y >= 0 && Y < COLUMN_COUNT) {
+
+                    int currentid = X * COLUMN_COUNT + Y;
+                    arrayList.get(currentid).count++;
+                    arrayList.get(currentid).playerColour = currentPlayer;
+                    arrayList.get(currentid).display();
+
+                    if (arrayList.get(currentid).isExplodable(X, Y)) {
+                        queue.add(arrayList.get(currentid));
+                        //update the list for that level
+                        temp.add(arrayList.get(currentid));
+                    }
+                }
+            }
+        }
+    }
+
+    public void updateUI(ArrayList<Block> list) {
+
+        for (int i = 0; i < list.size(); i++) {
+            Block currentBlock = list.get(i);
+
+            int r[] = {1, -1, 0, 0};
+            int c[] = {0, 0, 1, -1};
+
+        }
+    }
+
 
     //TODO : implement a bfs on the 2d grid, with time gaps between each expansion
     public void explode(int x, int y) {

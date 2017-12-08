@@ -60,7 +60,8 @@ public class Block {
         //connect corresponding gifs to the gifImageViews'
         if (playerColour.equals("none")) {
             gifImageView.setImageDrawable(Helper.empty);
-        } else if (playerColour.equals("red")) {
+        }
+        else if (playerColour.equals("red")) {
             if (count == 0) {
                 gifImageView.setImageDrawable(Helper.empty);
             } else if (count == 1) {
