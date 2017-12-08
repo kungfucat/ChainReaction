@@ -2,6 +2,7 @@ package me.kungfucat.chainreaction;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -61,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             for (int j = 0; j < COLUMN_COUNT; j++) {
 
-                //Add the gifImageViews to the linear layout created above
+//                Add the gifImageViews to the linear layout created above
                 GifImageView gifImageView = new GifImageView(this);
                 LinearLayout.LayoutParams imageViewlayoutParam = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -75,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 gifImageView.setId(i * COLUMN_COUNT + j);
                 //main activity implements the onClick
                 gifImageView.setOnClickListener(this);
-                gifImageView.setImageDrawable(Helper.empty);
-                Block block = new Block(gifImageView, context);
+                Block block = new Block(gifImageView);
+                block.display();
                 arrayList.add(block);
                 sublinearLayout.addView(gifImageView);
 
@@ -91,9 +94,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         GifImageView imageView = (GifImageView) v;
         int id = imageView.getId();
-        int x = id / COLUMN_COUNT;
-        int y = id % COLUMN_COUNT;
-
+        final int x = id / COLUMN_COUNT;
+        final int y = id % COLUMN_COUNT;
 
         Block currentBlock = arrayList.get(id);
 
@@ -111,14 +113,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             currentBlock.count++;
             currentBlock.display();
 
+
+            //testing slowing down of the explosion to make the players actually see it
             if (currentBlock.isExplodable(x, y)) {
-                explode1(x, y);
+
+                new CountDownTimer(1000, 1000) {
+
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        explode(x, y);
+                    }
+                }.start();
             }
 //                After explosion, attach on click back
             for (int i = 0; i < arrayList.size(); i++) {
                 arrayList.get(i).gifImageView.setOnClickListener(this);
             }
             toggle();
+        }
+        //don't know why, but had to make the thread sleep for a while to print freezing of gifs
+        slowDownProcess();
+    }
+
+    //just reset the whole board
+    public void slowDownProcess() {
+
+        for (int i = 0; i < arrayList.size(); i++) {
+            arrayList.get(i).gifImageView.setImageDrawable(null);
+        }
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < arrayList.size(); i++) {
+            arrayList.get(i).display();
         }
     }
 
@@ -143,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void explode1(int x, int y) {
+    public void explode(int x, int y) {
         int id = x * COLUMN_COUNT + y;
 
         Queue<Block> queue = new LinkedList<>();
@@ -186,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     int currentid = X * COLUMN_COUNT + Y;
                     arrayList.get(currentid).count++;
                     arrayList.get(currentid).playerColour = currentPlayer;
+
                     arrayList.get(currentid).display();
 
                     if (arrayList.get(currentid).isExplodable(X, Y)) {
@@ -206,35 +241,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int r[] = {1, -1, 0, 0};
             int c[] = {0, 0, 1, -1};
 
-        }
-    }
-
-    public void explode(int x, int y) {
-        if (x < 0 || y < 0 || x > MainActivity.ROW_COUNT - 1 || y > MainActivity.COLUMN_COUNT - 1) {
-            return;
-        }
-        int id = x * COLUMN_COUNT + y;
-        Block currentBlock = arrayList.get(id);
-        currentBlock.count++;
-        currentBlock.playerColour = currentPlayer;
-        currentBlock.display();
-        if (currentBlock.isExplodable(x, y)) {
-            currentBlock.count = 0;
-            currentBlock.playerColour = "none";
-            currentBlock.display();
-//            currentBlock.gifImageView.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    currentBlock.count = 0;
-//                    currentBlock.display();
-//                }
-//            }, 1000);
-
-            int r[] = {1, -1, 0, 0};
-            int c[] = {0, 0, 1, -1};
-            for (int i = 0; i < 4; i++) {
-                explode(x + r[i], y + c[i]);
-            }
         }
     }
 }

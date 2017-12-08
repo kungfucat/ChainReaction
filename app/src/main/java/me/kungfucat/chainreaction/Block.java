@@ -2,6 +2,7 @@ package me.kungfucat.chainreaction;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.CountDownTimer;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
@@ -16,17 +17,15 @@ import pl.droidsonroids.gif.GifImageView;
 //for one single box
 public class Block {
 
-    Context context;
     String playerColour;
     int count, id;
     GifImageView gifImageView;
 
-    Block(GifImageView im, Context c) {
+    Block(GifImageView im) {
         playerColour = "none";
         count = 0;
         gifImageView = im;
         id = gifImageView.getId();
-        context=c;
     }
 
     public boolean isExplodable(int i, int j) {
